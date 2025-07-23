@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Override Browser History</title>
+    <style>
+        #clock {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: #4a9eff;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        #clockSettings {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.95);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            display: none;
+        }
+
+        #clockSettings.show {
+            display: block;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #111;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .url-input {
+            width: 300px;
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 25px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .url-input:focus {
+            border-color: #4a9eff;
+        }
+
+        .override-button {
+            background: #4a9eff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .override-button:hover {
+            background: #357ab8;
+        }
+    </style>
+</head>
+<body>
+    <div id="clock"></div>
+    <div class="new-tab-page">
+        <h1>Browser History Override</h1>
+        <p>This site will appear in your history instead of the original site.</p>
+        <div class="new-tab-links">
+            <input type="text" id="cloakUrlInput" class="url-input" placeholder="Enter full URL (e.g., https://www.example.com)" />
+            <button id="cloakUrlSubmit" class="override-button">Submit</button>
+        </div>
+    </div>
+    <a href="/" class="new-tab-link" style="margin-top: 20px;">← Back to Home</a>
+    <script>
+        function makecloak(replaceUrl) {
+            if (window.top.location.href !== 'about:blank') {
+                var url = window.location.href;
+                const win = window.open();
+                if (!win || win.closed || typeof win.closed === 'undefined') {
+                    return;
+                }
+                win.document.body.style.margin = '0';
+                win.document.body.style.height = '100vh';
+                var iframe = win.document.createElement('iframe');
+                iframe.style.border = 'none';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.margin = '0';
+                iframe.referrerPolicy = 'no-referrer';
+                iframe.allow = 'fullscreen';
+                iframe.src = url.toString();
+                win.document.body.appendChild(iframe);
+                window.location.replace(replaceUrl);
+            }
+        }
+
+        document.getElementById('cloakUrlSubmit').addEventListener('click', function() {
+            var url = document.getElementById('cloakUrlInput').value;
+            try {
+                var newUrl = new URL(url); // Validates the URL
+                makecloak(newUrl.href); // Use makecloak to replace URL
+            } catch (e) {
+                alert('Please enter a valid full URL.');
+                console.error(e); // Log the error for debugging
+            }
+        });
+
+        function updateClock() {
+            const clock = document.getElementById('clock');
+            const now = new Date();
+            const format = document.querySelector('input[name="clockFormat"]:checked').value;
+            
+            let options = {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            };
+
+            if (format === '12') {
+                options.hour12 = true;
+                options.timeZoneName = 'short';
+            } else if (format === '24') {
+                options.hour12 = false;
+                options.timeZoneName = 'short';
+            } else if (format === 'gmt') {
+                options.hour12 = false;
+                options.timeZone = 'GMT';
+                options.timeZoneName = 'short';
+            }
+
+            const formatter = new Intl.DateTimeFormat(undefined, options);
+            clock.textContent = formatter.format(now);
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>

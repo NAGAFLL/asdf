@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPN Settings</title>
+    <style>
+        #clock {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: #4a9eff;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        #clockSettings {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.95);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            display: none;
+        }
+
+        #clockSettings.show {
+            display: block;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #111;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .container {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a9eff;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #888;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            background: #2a2a2a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .new-tab-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .new-tab-link {
+            padding: 15px 30px;
+            background: #2a2a2a;
+            color: #4a9eff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .new-tab-link:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="clock"></div>
+    <div class="container">
+        <h1>VPN Settings</h1>
+        <div class="form-group">
+            <label>Select Location:</label>
+            <select id="vpnLocation">
+                <option value="ic" style="color: #4CAF50;" selected>Iceland (Most Recommended)</option>
+                <option value="na">North America</option>
+                <option value="sa">South America</option>
+                <option value="eu">Europe</option>
+                <option value="uk">United Kingdom</option>
+                <option value="as">Asia</option>
+                <option value="ru">Russia</option>
+                <option value="oc">Oceania</option>
+            </select>
+            <button class="new-tab-link" onclick="changeLocation(document.getElementById('vpnLocation').value)">Set Location</button>
+        </div>
+    </div>
+    <div class="new-tab-links">
+        <a href="/" class="new-tab-link">Back to Home</a>
+    </div>
+
+    <div id="message" style="margin-top: 15px; color: #4CAF50; display: none;"></div>
+    <script>
+        function changeLocation(location) {
+            const messageEl = document.getElementById('message');
+            messageEl.style.display = 'none';
+            
+            fetch(`/change-location?loc=${location}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        messageEl.textContent = `Location successfully changed to ${location.toUpperCase()}`;
+                        messageEl.style.display = 'block';
+                        // Save location to session storage
+                        sessionStorage.setItem('vpnLocation', location);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error changing location:', err);
+                    messageEl.textContent = 'Failed to change location. Please try again.';
+                    messageEl.style.color = '#ff4444';
+                    messageEl.style.display = 'block';
+                });
+        }
+
+        // Load saved location on page load
+        const savedLocation = sessionStorage.getItem('vpnLocation');
+        if (savedLocation) {
+            changeLocation(savedLocation);
+            document.getElementById('vpnLocation').value = savedLocation;
+        }
+
+        function updateClock() {
+            const clock = document.getElementById('clock');
+            const now = new Date();
+            const format = document.querySelector('input[name="clockFormat"]:checked').value;
+            
+            let options = {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            };
+
+            if (format === '12') {
+                options.hour12 = true;
+                options.timeZoneName = 'short';
+            } else if (format === '24') {
+                options.hour12 = false;
+                options.timeZoneName = 'short';
+            } else if (format === 'gmt') {
+                options.hour12 = false;
+                options.timeZone = 'GMT';
+                options.timeZoneName = 'short';
+            }
+
+            const formatter = new Intl.DateTimeFormat(undefined, options);
+            clock.textContent = formatter.format(now);
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>

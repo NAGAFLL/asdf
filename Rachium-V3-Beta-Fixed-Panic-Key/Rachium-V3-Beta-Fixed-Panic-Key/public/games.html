@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>classroom</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .game-card {
+            background-color: #2c2c2c;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px;
+            overflow: hidden;
+            width: 300px;
+            transition: transform 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+        .game-card:hover {
+            transform: scale(1.05);
+        }
+        .game-iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .game-content {
+            padding: 15px;
+            text-align: center;
+        }
+        .game-title {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #f0f0f0;
+        }
+        .game-description {
+            font-size: 0.9em;
+            color: #999;
+        }
+        .game-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .play-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            text-decoration: none;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .play-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+        .play-button:active {
+            background-color: #004494;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-card" id="card2">
+        <img src="https://www.google.com/s2/favicons?domain=1v1.lol" alt="1v1.LOL" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">1v1.LOL</h2>
+            <p class="game-description">Build and battle in this exciting multiplayer game!</p>
+            <button class="play-button" id="play2">Play</button>
+        </div>
+        <iframe src="https://1v1.lol/" class="game-iframe" id="game2-iframe" title="1v1.LOL"></iframe>
+    </div>
+
+    <div class="game-card" id="card3">
+        <img src="https://www.google.com/s2/favicons?domain=eaglercraft.q13x.com" alt="Eaglercraft" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">Eaglercraft</h2>
+            <p class="game-description">Download Eaglercraft to play!</p>
+            <a href="/downloads/EaglercraftX_1.8_u49_Offline_Signed.html" download="EaglercraftX_1.8.html" class="play-button">Download</a>
+        </div>
+    </div>
+
+    <div class="game-card" id="card4">
+        <img src="https://www.google.com/s2/favicons?domain=subwaysurfersmonaco.glitch.me" alt="Subway Surfers Monaco" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">Subway Surfers Monaco</h2>
+            <p class="game-description">Run through the streets of Monaco in this fun game!</p>
+            <button class="play-button" id="play4">Play</button>
+        </div>
+        <iframe src="https://subwaysurfersmonaco.glitch.me" class="game-iframe" id="game4-iframe" title="Subway Surfers Monaco"></iframe>
+    </div>
+
+    <div class="game-card" id="card5">
+        <img src="https://www.google.com/s2/favicons?domain=paper-io.com" alt="Paper.io" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">Paper.io</h2>
+            <p class="game-description">Conquer as much territory as possible and beat the competition in Paper.io!</p>
+            <button class="play-button" id="play5">Play</button>
+        </div>
+        <iframe src="https://paper-io.com" class="game-iframe" id="game5-iframe" title="Paper.io"></iframe>
+    </div>
+
+    <div class="game-card" id="card6">
+        <img src="https://www.google.com/s2/favicons?domain=igre.games" alt="BitLife Life Simulator" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">BitLife Life Simulator</h2>
+            <p class="game-description">Live your dream life in this simulator game!</p>
+            <button class="play-button" id="play6">Play</button>
+        </div>
+        <iframe src="https://igre.games/en/bitlife-life-simulator/fullscreen/" class="game-iframe" id="game6-iframe" title="BitLife Life Simulator"></iframe>
+    </div>
+
+    <!-- Add more game cards here -->
+
+    <div class="game-card" id="card7">
+        <img src="https://www.google.com/s2/favicons?domain=www.crazygames.com" alt="FNAF 1" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">Five Nights at Freddy's</h2>
+            <p class="game-description">The original FNAF that started it all!</p>
+            <button class="play-button" id="play7">Play</button>
+        </div>
+        <iframe src="https://www.crazygames.com/embed/five-nights-at-freddys" class="game-iframe" id="game7-iframe" title="FNAF 1"></iframe>
+    </div>
+
+    <div class="game-card" id="card8">
+        <img src="https://www.google.com/s2/favicons?domain=www.crazygames.com" alt="FNAF 2" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">Five Nights at Freddy's 2</h2>
+            <p class="game-description">The second chapter in the FNAF saga!</p>
+            <button class="play-button" id="play8">Play</button>
+        </div>
+        <iframe src="https://www.crazygames.com/embed/five-nights-at-freddys-2" class="game-iframe" id="game8-iframe" title="FNAF 2"></iframe>
+    </div>
+
+    <div class="game-card" id="card9">
+        <img src="https://www.google.com/s2/favicons?domain=www.crazygames.com" alt="FNAF 3" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">Five Nights at Freddy's 3</h2>
+            <p class="game-description">Return to Fazbear's Fright!</p>
+            <button class="play-button" id="play9">Play</button>
+        </div>
+        <iframe src="https://www.crazygames.com/embed/five-nights-at-freddys-3" class="game-iframe" id="game9-iframe" title="FNAF 3"></iframe>
+    </div>
+
+    <div class="game-card" id="card10">
+        <img src="https://www.google.com/s2/favicons?domain=www.crazygames.com" alt="FNAF 4" class="game-image">
+        <div class="game-content">
+            <h2 class="game-title">Five Nights at Freddy's 4</h2>
+            <p class="game-description">Face your fears in the final chapter!</p>
+            <button class="play-button" id="play10">Play</button>
+        </div>
+        <iframe src="https://www.crazygames.com/embed/five-nights-at-freddys-4" class="game-iframe" id="game10-iframe" title="FNAF 4"></iframe>
+    </div>
+
+    <script>
+        document.getElementById('play2').addEventListener('click', function(event) {
+            showGame('game2-iframe');
+            toggleFullscreen(event, 'game2-iframe');
+        });
+        document.getElementById('play3').addEventListener('click', function(event) {
+            showGame('game3-iframe');
+            toggleFullscreen(event, 'game3-iframe');
+        });
+        document.getElementById('play4').addEventListener('click', function(event) {
+            showGame('game4-iframe');
+            toggleFullscreen(event, 'game4-iframe');
+        });
+        document.getElementById('play5').addEventListener('click', function(event) {
+            showGame('game5-iframe');
+            toggleFullscreen(event, 'game5-iframe');
+        });
+        document.getElementById('play6').addEventListener('click', function(event) {
+            showGame('game6-iframe');
+            toggleFullscreen(event, 'game6-iframe');
+        });
+
+        document.getElementById('play7').addEventListener('click', function(event) {
+            showGame('game7-iframe');
+            toggleFullscreen(event, 'game7-iframe');
+        });
+        document.getElementById('play8').addEventListener('click', function(event) {
+            showGame('game8-iframe');
+            toggleFullscreen(event, 'game8-iframe');
+        });
+        document.getElementById('play9').addEventListener('click', function(event) {
+            showGame('game9-iframe');
+            toggleFullscreen(event, 'game9-iframe');
+        });
+        document.getElementById('play10').addEventListener('click', function(event) {
+            showGame('game10-iframe');
+            toggleFullscreen(event, 'game10-iframe');
+        });
+
+        function showGame(iframeId) {
+            var iframes = document.getElementsByClassName('game-iframe');
+            for (var i = 0; i < iframes.length; i++) {
+                iframes[i].style.display = 'none';
+            }
+            document.getElementById(iframeId).style.display = 'block';
+            document.getElementById(iframeId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleFullscreen(event, iframeId) {
+            event.stopPropagation();
+            var iframe = document.getElementById(iframeId);
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.mozRequestFullScreen) { // Firefox
+                iframe.mozRequestFullScreen();
+            } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) { // IE/Edge
+                iframe.msRequestFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>

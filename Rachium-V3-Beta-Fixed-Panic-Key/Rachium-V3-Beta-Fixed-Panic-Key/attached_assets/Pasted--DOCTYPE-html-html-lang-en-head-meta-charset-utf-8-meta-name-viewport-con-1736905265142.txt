@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Override Browser History</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #111;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .url-input {
+            width: 300px;
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 25px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .url-input:focus {
+            border-color: #4a9eff;
+        }
+        .override-button {
+            background: #4a9eff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .override-button:hover {
+            background: #357ab8;
+        }
+        .backlink {
+            margin-top: 20px;
+            color: #4a9eff;
+            text-decoration: none;
+        }
+        .backlink:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="new-tab-page">
+        <h1>Browser History Override</h1>
+        <p>This site will appear in your history instead of the original site.</p>
+        <div class="new-tab-links">
+            <input type="text" id="cloakUrlInput" class="url-input" placeholder="Enter full URL (e.g., https://www.example.com)" />
+            <button id="cloakUrlSubmit" class="override-button">Submit</button>
+        </div>
+        <a href="index.html" class="backlink">Back to Home</a>
+    </div>
+    <script>
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function makecloak(replaceUrl) {
+            if (window.top.location.href !== 'about:blank') {
+                const win = window.open('about:blank');
+                if (!win || win.closed || typeof win.closed === 'undefined') return;
+
+                win.document.body.style.margin = '0';
+                win.document.body.style.height = '100vh';
+                const iframe = win.document.createElement('iframe');
+                iframe.style.border = 'none';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.margin = '0';
+                iframe.referrerPolicy = 'no-referrer';
+                iframe.allow = 'fullscreen';
+                iframe.src = window.location.href;
+                win.document.body.appendChild(iframe);
+                window.location.replace(replaceUrl);
+            }
+        }
+
+        document.getElementById('cloakUrlSubmit').addEventListener('click', function() {
+            let url = document.getElementById('cloakUrlInput').value.trim();
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'http://' + url;
+            }
+
+            if (isValidUrl(url)) {
+                makecloak(url);
+            } else {
+                alert('Please enter a valid full URL.');
+            }
+        });
+    </script>
+</body>
+</html>

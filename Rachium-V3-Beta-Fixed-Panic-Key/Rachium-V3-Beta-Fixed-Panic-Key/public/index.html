@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rachium v3 Beta Edition</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #111;
+            color: white;
+            min-height: 100vh;
+            display: flexnew;
+            flex-direction: column;
+        }
+
+        .tabs-container {
+            background: #1a1a1a;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 40px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            background: #2a2a2a;
+            border: none;
+            padding: 8px 24px;
+            color: #fff;
+            border-radius: 4px;
+            margin-right: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .tab.active {
+            background: #333;
+        }
+
+        .new-tab {
+            background: transparent;
+            border: none;
+            color: #4a9eff;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            min-width: 40px;
+        }
+
+        .close-tab {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 0 4px;
+            margin-left: 8px;
+        }
+
+        .url-container {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            padding: 8px;
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-button {
+            background: #2a2a2a;
+            border: none;
+            color: #fff;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            font-size: 18px;
+            min-width: 35px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .refresh-button:hover {
+            background: #333;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 25px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .url-input:focus {
+            border-color: #4a9eff;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 0;
+            margin-top: 110px;
+            flex-grow: 1;
+            height: calc(100vh - 110px);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .proxy-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+
+        .new-tab-page {
+            text-align: center;
+            padding: 50px 20px;
+            height: 100%;
+            background: #111;
+        }
+
+        .new-tab-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .new-tab-link {
+            padding: 15px 30px;
+            background: #2a2a2a;
+            color: #4a9eff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .new-tab-link:hover {
+            background: #333;
+        }
+
+        #clock {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            color: #4a9eff;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        #clockSettings {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.95);
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            display: none;
+        }
+
+        #clockSettings.show {
+            display: block;
+        }
+
+        .clock-option {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .clock-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .version-text {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: #888; /* Light gray color */
+            font-size: 14px;
+        }
+    </style>
+    <title>Rachium V2F</title>
+    <script src="/cloak.js"></script>
+</head>
+<body>
+    <div id="clock"></div>
+    <div id="clockSettings">
+        <div class="clock-option">
+            <input type="radio" name="clockFormat" value="12" checked>
+            <label for="12">12-hour</label>
+        </div>
+        <div class="clock-option">
+            <input type="radio" name="clockFormat" value="24">
+            <label for="24">24-hour</label>
+        </div>
+        <div class="clock-option">
+            <input type="radio" name="clockFormat" value="gmt">
+            <label for="gmt">UTC</label>
+        </div>
+    </div>
+    <div class="version-text">V Beta 1.3</div>
+    <div class="tabs-container">
+        <button class="new-tab" onclick="createNewTab()">+</button>
+    </div>
+    <div class="url-container">
+        <button class="refresh-button" onclick="refreshActiveTab()">↻</button>
+        <input type="text" class="url-input" placeholder="Enter URL (example.com)" onkeydown="if(event.key==='Enter') loadURL(activeTabId)">
+    </div>
+    <div id="tab-contents"></div>
+
+    <script>
+        let tabs = [];
+        let activeTabId = null;
+
+        function loadSavedTabs() {
+            const savedTabs = JSON.parse(localStorage.getItem('tabs') || '[]');
+            if (savedTabs.length > 0) {
+                savedTabs.forEach(tab => createNewTab(tab));
+            } else {
+                createNewTab();
+            }
+        }
+
+        function saveTabs() {
+            localStorage.setItem('tabs', JSON.stringify(tabs));
+        }
+
+        function createNewTab(savedTab = null) {
+            const tabId = savedTab?.id || 'tab-' + Date.now();
+            const tab = { id: tabId, url: savedTab?.url || '' };
+            tabs.push(tab);
+
+            const tabButton = document.createElement('button');
+            tabButton.className = 'tab';
+            if (savedTab?.url) {
+                const favicon = document.createElement('img');
+                favicon.src = `https://www.google.com/s2/favicons?domain=${savedTab.url}`;
+                favicon.style.width = '16px';
+                favicon.style.height = '16px';
+                favicon.style.marginRight = '8px';
+
+                tabButton.innerHTML = '';
+                tabButton.appendChild(favicon);
+                tabButton.insertAdjacentHTML('beforeend', `
+                    ${savedTab.url}
+                    <button class="close-tab" onclick="closeTab('${tabId}')">&times;</button>
+                `);
+            } else {
+                tabButton.innerHTML = `
+                    <img src="/newtab.png" style="width: 16px; height: 16px; margin-right: 8px; opacity: 0.7;">
+                    New Tab
+                    <button class="close-tab" onclick="closeTab('${tabId}')">&times;</button>
+                `;
+            }
+
+            tabButton.onclick = (e) => {
+                if (!e.target.classList.contains('close-tab')) {
+                    activateTab(tabId);
+                }
+            };
+
+            const tabContent = document.createElement('div');
+            tabContent.className = 'tab-content';
+
+            if (savedTab?.url) {
+                tabContent.innerHTML = `<iframe class="proxy-frame" id="frame-${tabId}" src="/web/_${btoa(savedTab.url)}_/"></iframe>`;
+            } else {
+                tabContent.innerHTML = `
+                    <div class="new-tab-page">
+                        <h1>Welcome to Rachium</h1>
+                        <div class="new-tab-links">
+                        <a href="/settings.html" class="new-tab-link">Settings</a>
+<a href="/games.html" class="new-tab-link">Games</a>
+                    </div>
+                </div>
+                    </div>
+                `;
+            }
+
+            document.querySelector('.new-tab').insertAdjacentElement('beforebegin', tabButton);
+            document.getElementById('tab-contents').appendChild(tabContent);
+            activateTab(tabId);
+            saveTabs();
+        }
+
+        function activateTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            const tabIndex = tabs.findIndex(t => t.id === tabId);
+            if (tabIndex === -1) return;
+
+            const tab = document.querySelectorAll('.tab')[tabIndex];
+            const content = document.querySelectorAll('.tab-content')[tabIndex];
+            const input = document.querySelector('.url-input');
+
+            tab.classList.add('active');
+            content.classList.add('active');
+            activeTabId = tabId;
+            input.value = tabs[tabIndex].url || '';
+        }
+
+        function closeTab(tabId) {
+            const tabIndex = tabs.findIndex(t => t.id === tabId);
+            if (tabIndex === -1) return;
+
+            tabs = tabs.filter(t => t.id !== tabId);
+            document.querySelectorAll('.tab')[tabIndex].remove();
+            document.querySelectorAll('.tab-content')[tabIndex].remove();
+
+            if (activeTabId === tabId && tabs.length > 0) {
+                activateTab(tabs[0].id);
+            } else if (tabs.length === 0) {
+                createNewTab();
+            }
+            saveTabs();
+        }
+
+        function loadURL(tabId) {
+            const tabIndex = tabs.findIndex(t => t.id === tabId);
+            if (tabIndex === -1) return;
+
+            const input = document.querySelector('.url-input');
+            let url = input.value.trim();
+
+            if (!url) return;
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'http://' + url;
+            }
+
+            tabs[tabIndex].url = url;
+            const content = document.querySelectorAll('.tab-content')[tabIndex];
+            const iframe = document.createElement('iframe');
+            iframe.className = 'proxy-frame';
+            iframe.id = `frame-${tabId}`;
+            iframe.src = `/web/_${btoa(url)}_/`;
+
+            const tab = document.querySelectorAll('.tab')[tabIndex];
+            const favicon = document.createElement('img');
+            favicon.src = `https://www.google.com/s2/favicons?domain=${url}`;
+            favicon.style.width = '16px';
+            favicon.style.height = '16px';
+            favicon.style.marginRight = '8px';
+
+            const urlKeyword = new URL(url).hostname.split('.')[0];
+            const capitalizedKeyword = urlKeyword.charAt(0).toUpperCase() + urlKeyword.slice(1);
+
+            tab.innerHTML = '';
+            tab.appendChild(favicon);
+            tab.insertAdjacentHTML('beforeend', `
+                ${capitalizedKeyword}
+                <button class="close-tab" onclick="closeTab('${tabId}')">&times;</button>
+            `);
+
+            content.innerHTML = '';
+            content.appendChild(iframe);
+
+            saveTabs();
+        }
+
+        function refreshActiveTab() {
+            const activeContent = document.querySelector('.tab-content.active');
+            const frame = activeContent.querySelector('iframe');
+            if (frame) {
+                frame.src = frame.src;
+            }
+        }
+
+        function performSearch() {
+            const searchQuery = document.getElementById('searchInput').value.trim();
+            if (searchQuery) {
+                const url = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}&sca_esv=07409c85c1408ace&rlz=1C1SJWC_enUS1115US1115&sxsrf=ADLYWILeHbYYZidQDLQkaJLMBZYuQoIdyQ%3A1735923216627&ei=EBZ4Z6mIJs2ekPIPpMiJuAM&ved=0ahUKEwip0Lz1gdqKAxVND0QIHSRkAjcQ4dUDCBA&uact=5&oq=google&gs_lp=Egxnd3Mtd2l6LXNlcnAiBmdvb2dsZTIKECMYgAQYJxiKBTIKECMYgAQYJxiKBTIKECMYgAQYJxiKBTIWEC4YgAQYsQMY0QMYQxiDARjHARiKBTIKEAAYgAQYQxiKBTIKEAAYgAQYQxiKBTILEAAYgAQYsQMYgwEyChAAGIAEGEMYigUyChAAGIAEGEMYigUyDRAAGIAEGLEDGBQYhwJI2gxQ3wJY0AZwAXgBkAEAmAFcoAGyAaoBATK4AQPIAQD4AQGYAgOgAsIBwgIKEAAYsAMY1gQYR8ICDRAAGIAEGLADGEMYigWYAwCIBgGQBgmSBwEzoAfKEw&sclient=gws-wiz-serp`.replace('searchqhere', searchQuery);
+                const tabId = 'tab-' + Date.now();
+                const tab = { id: tabId, url: url };
+                tabs.push(tab);
+
+                const content = document.createElement('div');
+                content.className = 'tab-content';
+                content.innerHTML = `<iframe class="proxy-frame" id="frame-${tabId}" src="/web/_${btoa(url)}_/"></iframe>`;
+
+                document.getElementById('tab-contents').appendChild(content);
+
+                const tabButton = document.createElement('button');
+                tabButton.className = 'tab';
+                tabButton.innerHTML = `
+                    <img src="https://www.google.com/s2/favicons?domain=google.com" style="width: 16px; height: 16px; margin-right: 8px;">
+                    Google Search
+                    <button class="close-tab" onclick="closeTab('${tabId}')">&times;</button>
+                `;
+
+                tabButton.onclick = (e) => {
+                    if (!e.target.classList.contains('close-tab')) {
+                        activateTab(tabId);
+                    }
+                };
+
+                document.querySelector('.new-tab').insertAdjacentElement('beforebegin', tabButton);
+                activateTab(tabId);
+                saveTabs();
+            }
+        }
+
+        function changeLocation(location) {
+            fetch(`/change-location?loc=${location}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        alert(`Location changed to ${data.name}`);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error changing location:', err);
+                });
+        }
+
+        function openGoogleTab() {
+            const tabId = 'tab-' + Date.now();
+            const url = 'https://www.google.com/webhp';
+            const tab = { id: tabId, url: url };
+            tabs.push(tab);
+
+            const content = document.createElement('div');
+            content.className = 'tab-content';
+            content.innerHTML = `<iframe class="proxy-frame" id="frame-${tabId}" src="/web/_${btoa(url)}_/"></iframe>`;
+
+            document.getElementById('tab-contents').appendChild(content);
+
+            const tabButton = document.createElement('button');
+            tabButton.className = 'tab';
+            tabButton.innerHTML = `
+                <img src="https://www.google.com/s2/favicons?domain=google.com" style="width: 16px; height: 16px; margin-right: 8px;">
+                Google
+                <button class="close-tab" onclick="closeTab('${tabId}')">&times;</button>
+            `;
+
+            tabButton.onclick = (e) => {
+                if (!e.target.classList.contains('close-tab')) {
+                    activateTab(tabId);
+                }
+            };
+
+            document.querySelector('.new-tab').insertAdjacentElement('beforebegin', tabButton);
+            activateTab(tabId);
+            saveTabs();
+        }
+
+        window.addEventListener('load', () => {
+            loadSavedTabs();
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        function updateClock() {
+            const clock = document.getElementById('clock');
+            const now = new Date();
+            const format = document.querySelector('input[name="clockFormat"]:checked').value;
+
+            let options = {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            };
+
+            if (format === '12') {
+                options.hour12 = true;
+                options.timeZoneName = 'short';
+            } else if (format === '24') {
+                options.hour12 = false;
+                options.timeZoneName = 'short';
+            } else if (format === 'gmt') {
+                options.hour12 = false;
+                options.timeZone = 'GMT';
+                options.timeZoneName = 'short';
+            }
+
+            const formatter = new Intl.DateTimeFormat(undefined, options);
+            clock.textContent = formatter.format(now);
+        }
+
+        // Toggle clock settings
+        document.getElementById('clock').addEventListener('click', () => {
+            document.getElementById('clockSettings').classList.toggle('show');
+        });
+
+        // Update clock when format changes
+        document.querySelectorAll('input[name="clockFormat"]').forEach(radio => {
+            radio.addEventListener('change', updateClock);
+        });
+
+        // Save format preference
+        function saveClockFormat(format) {
+            localStorage.setItem('clockFormat', format);
+        }
+
+        // Load saved format
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedFormat = localStorage.getItem('clockFormat');
+            if (savedFormat) {
+                document.querySelector(`input[value="${savedFormat}"]`).checked = true;
+            }
+        });
+
+        // Update clock and save format when changed
+        document.querySelectorAll('input[name="clockFormat"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                updateClock();
+                saveClockFormat(e.target.value);
+            });
+        });
+    </script>
+</body>
+</html>
